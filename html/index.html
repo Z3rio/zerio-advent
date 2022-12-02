@@ -86,6 +86,8 @@
         methods: {
           close() {
             this.open = false;
+            document.body.style.opacity = "0";
+
             fetch("https://zerio-advent/close")
               .then((resp) => {})
               .catch((err) => {
@@ -177,6 +179,8 @@
             viewmodel.open = true;
             viewmodel.currentDay = e.data.day;
             viewmodel.rewards = e.data.rewards;
+
+            document.body.style.opacity = "1";
             break;
 
           case "firstSetup":

@@ -7,6 +7,11 @@
   user-select: none;
 }
 
+body {
+  transition: 250ms;
+  opacity: 0;
+}
+
 .main-container {
   width: 80vw;
   height: calc(80vw / 1.77777778);
