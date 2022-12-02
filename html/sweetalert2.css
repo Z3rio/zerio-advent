@@ -1,0 +1,35 @@
+/* SWEET ALERT 2 OVERWRITE, this shit is just dumb, but it is what it is i guess */
+
+.swal2-popup {
+  background: #114 !important;
+}
+
+.swal2-title {
+  color: #fff !important;
+  font-size: 1.5rem !important;
+  font-family: sans-serif !important;
+  font-weight: 500 !important;
+}
+
+.swal2-html-container {
+  color: #ddd !important;
+  font-size: 1rem !important;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400 !important;
+}
+
+.swal2-actions button {
+  background: #2d2d76 !important;
+
+  color: #fff !important;
+  font-size: 1rem !important;
+  font-family: sans-serif !important;
+  font-weight: 400 !important;
+
+  border: none !important;
+  outline: none !important;
+}
+
+.swal2-actions button:hover {
+  background: #403b92 !important;
+}

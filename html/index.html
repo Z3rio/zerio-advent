@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="tooltip.css" rel="stylesheet" type="text/css" />
+    <link href="sweetalert2.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/v-tooltip@^2.0.0"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div
+        class="main-container"
+        :class="{closed: open == false}"
+        :style="{'background-image': 'url(' + background + ')'}"
+      >
+        <div
+          v-ripple="el.claimed !== true"
+          v-for="(el, idx) in rewards"
+          v-tooltip="el.claimed ? 'Already claimed' : 'Click to claim'"
+          class="reward"
+          :class="{claimed: el.claimed == true}"
+          :key="idx"
+          :style="{
+            width: rewards.length == 24 ? 'calc(100% / 6 - (5vw / 6) - 2px)' : 'calc(20% - (4vw / 5) - 2px)', 
+            height: rewards.length == 24 ? 'calc(25% - (3vw / 4) - 2px)' : 'calc(20% - (4vw / 5) - 2px)'
+          }"
+          @click="claim(idx)"
+        >
+          {{idx + 1}}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const nf = Intl.NumberFormat();
+
+      function nth(d) {
+        if (d > 3 && d < 21) return "th";
+        switch (d % 10) {
+          case 1:
+            return "st";
+          case 2:
+            return "nd";
+          case 3:
+            return "rd";
+          default:
+            return "th";
+        }
+      }
+
+      const viewmodel = new Vue({
+        vuetify: new Vuetify(),
+        el: "#app",
+
+        data() {
+          return {
+            open: false,
+            rewards: [],
+            background:
+              "https://www.inkling.com/wp-content/uploads/2021/06/SD-default-image.png",
+            currentDay: -1,
+          };
+        },
+
+        methods: {
+          close() {
+            this.open = false;
+            fetch("https://zerio-advent/close")
+              .then((resp) => {})
+              .catch((err) => {
+                if (err) {
+                  console.error(err);
+                }
+              });
+          },
+
+          claim(idx) {
+            if (this.rewards[idx].claimed !== true) {
+              if (idx + 1 <= this.currentDay) {
+                Vue.set(this.rewards[idx], "claimed", true);
+
+                let prizeStr = "";
+
+                const rewardData = this.rewards[idx];
+                switch (rewardData.type) {
+                  case "vehicle":
+                    prizeStr = `A brand new <b>${rewardData.label}</b> (car).<br>You can find it in your garage.`;
+                    break;
+                  case "item":
+                    prizeStr = `${rewardData.amount}x ${rewardData.label}`;
+                    break;
+                  case "money":
+                    let accountLabel = "";
+
+                    if (rewardData.account == "bank") {
+                      accountLabel = "bank";
+                    } else if (
+                      rewardData.account == "money" ||
+                      rewardData.account == "cash"
+                    ) {
+                      accountLabel = "pocket";
+                    }
+
+                    prizeStr = `$${nf.format(
+                      rewardData.amount
+                    )}, delivered straight to your ${accountLabel}.`;
+                    break;
+                }
+
+                Swal.fire({
+                  title: "Claimed",
+                  html: `You claimed the reward for the ${idx + 1}${nth(
+                    idx + 1
+                  )} day!<br>Your prize: ${prizeStr}`,
+                  icon: "success",
+                  target: ".main-container",
+                });
+                fetch("https://zerio-advent/claim", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    day: idx + 1,
+                  }),
+                })
+                  .then((resp) => {})
+                  .catch((err) => {
+                    if (err) {
+                      console.error(err);
+                    }
+                  });
+              } else {
+                Swal.fire({
+                  title: "Not claimable",
+                  text: `You can't claim this reward yet, wait until the ${
+                    idx + 1
+                  }${nth(idx + 1)}`,
+                  icon: "error",
+                  target: ".main-container",
+                });
+              }
+            } else {
+              Swal.fire({
+                title: "Already claimed",
+                text: "You have already claimed this reward.",
+                icon: "error",
+                target: ".main-container",
+              });
+            }
+          },
+        },
+        computed: {},
+      });
+
+      window.addEventListener("message", function (e) {
+        switch (e.data.action) {
+          case "open":
+            viewmodel.open = true;
+            viewmodel.currentDay = e.data.day;
+            viewmodel.rewards = e.data.rewards;
+            break;
+
+          case "firstSetup":
+            viewmodel.background = e.data.background;
+            fetch("https://zerio-advent/loaded")
+              .then((resp) => {})
+              .catch((err) => {
+                if (err) {
+                  console.error(err);
+                }
+              });
+            break;
+        }
+      });
+
+      window.addEventListener("keydown", function (e) {
+        if (e.key == "Escape") {
+          viewmodel.close();
+        }
+      });
+    </script>
+  </body>
+</html>
