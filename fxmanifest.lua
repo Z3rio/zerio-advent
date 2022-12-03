@@ -21,4 +21,4 @@ files {
   "html/*.css"
 }
 
-ui_page "http://localhost:8080"
+ui_page "html/index.html"
