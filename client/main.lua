@@ -1,4 +1,4 @@
-Citizen.CreateThread(function()
+    Citizen.CreateThread(function()
     local prompt, zoneId = nil, nil
     local loaded = false
 
@@ -134,21 +134,16 @@ Citizen.CreateThread(function()
                     size = vector3(Config.TargetSize[1], Config.TargetSize[2], Config.TargetSize[3]),
                     rotation = Config.TargetRotation,
                     debug = Config.TargetDebug,
+                    interactionDistance = 1.3,
+                    drawSprite = true,
                     options = {
                         {
-                            name = "advent_calender",
+                            name = 'use_calender',
                             icon = Config.TargetIcon,
                             label = Config.TargetLabel,
-                            action = function()
+                            onSelect = function()
                                 Functions.Open()
-                            end,
-                            canInteract = function(entity, distance, coords, name)
-                                if distance <= Config.TargetMaxDist then
-                                    return true
-                                else
-                                    return false
-                                end
-                            end,
+                            end
                         }
                     }
                 })

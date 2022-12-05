@@ -14,7 +14,7 @@ Config.PlateUseSpace = true
 -- target    - Opens the menu when targetting at Config.Coords with the Config.TargetScript
 -- floating  - Opens the menu when the floating help text at Config.Coords is used
 -- custom    - Opens the advent calender when export["zerio-advent"]:Open() is triggered
-Config.OpenType = "proximity"
+Config.OpenType = "target"
 
 	-- Only needed if Config.OpenType is "command"
 	Config.Command = "calender"
@@ -27,7 +27,7 @@ Config.OpenType = "proximity"
 	Config.TargetScript = "ox_target" -- qb-target, ox_target or qtarget
 	Config.CustomTargetName = nil -- only needed if you have renamed your target script, otherwise just leave as nil
 
-	Config.TargetSize = {1,1,1}
+	Config.TargetSize = {2.0,2.0,2.0}
 	Config.TargetRotation = 0
 	Config.TargetDebug = false 
 	Config.TargetMaxDist = 2.5
