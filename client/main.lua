@@ -7,8 +7,9 @@
         targetScript = Config.CustomTargetName
     end
 
-    RegisterNUICallback("loaded", function()
+    RegisterNUICallback("loaded", function(data,cb)
         loaded = true
+        cb("ok")
     end)
 
     if #Config.Rewards ~= 25 and #Config.Rewards ~= 24 then
@@ -27,13 +28,15 @@
         Citizen.Wait(250)
     end
 
-    RegisterNUICallback("close", function()
+    RegisterNUICallback("close", function(data,cb)
         SetNuiFocus(false, false)
         opened = false
+        cb("ok")
     end)
 
-    RegisterNUICallback("claim", function(result)
+    RegisterNUICallback("claim", function(result, cb)
         TriggerServerEvent("zerio-advent:server:claimReward", result.day)
+        cb("ok")
     end)
 
     if Config.OpenType == "command" and type(Config.Command) == "string" then
