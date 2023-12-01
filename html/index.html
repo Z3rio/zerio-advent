@@ -88,7 +88,7 @@
             this.open = false;
             document.body.style.opacity = "0";
 
-            fetch("https://zerio-advent/close")
+            fetch(`https://${GetParentResourceName()}/close`)
               .then((resp) => {})
               .catch((err) => {
                 if (err) {
@@ -138,7 +138,7 @@
                   icon: "success",
                   target: ".main-container",
                 });
-                fetch("https://zerio-advent/claim", {
+                fetch(`https://${GetParentResourceName()}/claim`, {
                   method: "POST",
                   body: JSON.stringify({
                     day: idx + 1,
@@ -185,7 +185,7 @@
 
           case "firstSetup":
             viewmodel.background = e.data.background;
-            fetch("https://zerio-advent/loaded")
+            fetch(`https://${GetParentResourceName()}/loaded`)
               .then((resp) => {})
               .catch((err) => {
                 if (err) {
