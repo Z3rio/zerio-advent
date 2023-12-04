@@ -44,18 +44,53 @@ Functions = {
     end,
 
     -- MISC
+    DoesPlateExist = function(plate)
+        local retVal = promise.new()
+
+        if FrameworkName == "esx" then
+            Functions.SelectSQL(string.format("select count(1) from owned_vehicles where `plate` = \"%s\"", plate), function(resp)
+                retVal:resolve(resp ~= nil and resp[1] ~= nil and resp[1]["count(1)"] > 0)
+            end)
+        elseif FrameworkName == "qbcore" then
+            Functions.SelectSQL(string.format("select count(1) from player_vehicles where `plate` = \"%s\"", plate), function(resp)
+                retVal:resolve(resp ~= nil and resp[1] ~= nil and resp[1]["count(1)"] > 0)
+            end)
+        else
+            retVal:resolve(false)
+        end
+
+        Citizen.Await(retVal)
+
+        return retVal.value
+    end,
+
     GeneratePlate = function()
-        local plate = ""
-        for i = 1,Config.PlateFirstString do
-            plate = plate .. string.upper(string.char(math.random(97,122)))
+        local count = 0
+        local retVal = ""
+        while true do
+            retVal = ""
+            count = count + 1;
+
+            if count >= 100 then
+                return nil
+            end
+
+            for i = 1, Config.PlateFirstString do
+                retVal = retVal .. string.upper(string.char(math.random(97,122)))
+            end
+            if Config.PlateUseSpace then
+                retVal = retVal .. " "
+            end
+            for i = 1, Config.PlateLastString do
+                retVal = retVal .. tostring(math.random(1,9))
+            end
+
+            if Functions.DoesPlateExist(retVal) == false then
+                break;
+            end
         end
-        if Config.PlateUseSpace then
-            plate = plate .. " "
-        end
-        for i = 1,Config.PlateLastString do
-            plate = plate .. tonumber(math.random(1,9))
-        end
-        return plate
+
+        return retVal
     end,
     
     -- PLAYER
@@ -69,6 +104,11 @@ Functions = {
 
     GiveCar = function(plr, model)
         local plate = Functions.GeneratePlate()
+
+        if plate == nil then
+            warn("Could not generate plate in time, tried  100 times, yet failed")
+        end
+
         local hash = GetHashKey(model)
 
         if FrameworkName == "esx" then
