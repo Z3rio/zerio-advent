@@ -7,6 +7,9 @@ Config.PlateFirstString = 3
 Config.PlateLastString = 3
 Config.PlateUseSpace = true
 
+-- The month that the menu should work, 1-12. (12/December is the default)
+Config.Month = 12
+
 -- NAME      - EXPLENATION
 -- command   - Opens the advent calender when the command (Config.Command) is used.
 -- keybind   - Opens the advent calender when the keybind (Config.Keybind) is pressed.
