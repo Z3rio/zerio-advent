@@ -80,6 +80,8 @@
             background:
               "https://www.inkling.com/wp-content/uploads/2021/06/SD-default-image.png",
             currentDay: -1,
+            month: -1,
+            months = ["January", "February", "Mars", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
           };
         },
 
@@ -98,7 +100,7 @@
           },
 
           claim(idx) {
-            if (this.rewards[idx].claimed !== true) {
+            if (this.rewards[idx].claimed !== true && new Date().getMonth() === viewmodel.month - 1) {
               if (idx + 1 <= this.currentDay) {
                 Vue.set(this.rewards[idx], "claimed", true);
 
@@ -155,7 +157,7 @@
                   title: "Not claimable",
                   text: `You can't claim this reward yet, wait until the ${
                     idx + 1
-                  }${nth(idx + 1)}`,
+                  }${nth(idx + 1)} of ${viewmodel.months[viewmodel.month - 1]}`,
                   icon: "error",
                   target: ".main-container",
                 });
@@ -186,11 +188,12 @@
           case "firstSetup":
             viewmodel.background = e.data.background;
             fetch(`https://${GetParentResourceName()}/loaded`)
-              .then((resp) => {})
+              .then((resp) => resp.json())
+              .then((resp)=> {
+                viewmodel.month = resp.month
+              })
               .catch((err) => {
-                if (err) {
-                  console.error(err);
-                }
+                void err;
               });
             break;
         }
