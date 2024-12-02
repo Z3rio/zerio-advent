@@ -29,7 +29,7 @@ AddEventHandler("zerio-advent:server:claimReward", function(day)
 	local src = source
 	local Player = Functions.GetPlayer(src)
 
-	if Player and Config.Rewards[day] and day <= tonumber(os.date("%d")) then
+	if Player and Config.Rewards[day] and day <= tonumber(os.date("%d")) and Config.Month == tonumber(os.date("%m")) then
 		local data = Config.Rewards[day]
 		local sqlStr = ""
 
