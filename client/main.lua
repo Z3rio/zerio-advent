@@ -9,7 +9,9 @@
 
     RegisterNUICallback("loaded", function(data,cb)
         loaded = true
-        cb("ok")
+        cb({
+            month = Config.Month
+        })
     end)
 
     if #Config.Rewards ~= 25 and #Config.Rewards ~= 24 then
